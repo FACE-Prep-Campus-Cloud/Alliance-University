@@ -266,8 +266,8 @@
       <select class="class-select" id="classSelect" onchange="switchClass(this.value)">
         <option value="BCA_I">BCA I</option>
         <option value="BCA_II">BCA II</option>
-        <option value="MCA_I">I MCA</option>
-        <option value="MCA_II">II MCA</option>
+        <option value="MCA_I">I MCA - A</option>
+        <option value="MCA_II"> I MCA - B</option>
       </select>
     </div>
     <img src="face prep campus .webp" alt="Logo" class="topbar-logo" onerror="this.style.display='none'"/>
@@ -433,21 +433,21 @@ const CLASS_CONFIG = {
     sheetId: '1tjT1ZTaGLBKoRnHa8bHmZkxQJAkWoCZRpkM0H62WE8c',
     sheetName: 'Sheet1',
   },
-  MCA_I: {
-    label: 'I MCA',
+  _I: {
+    label: 'I MCA - A',
     name:  'Master of Computer Applications I (2024 – 2026)',
     sheetId: '13izNc-vSkWHyzJy8-tFcxrC82yxbt7crQdtDw1qAafI',
     sheetName: 'Sheet1',
   },
   MCA_II: {
-    label: 'II MCA',
+    label: 'I MCA -B',
     name:  'Master of Computer Applications II (2023 – 2025)',
     sheetId: '1GtalgSey_i23xStXt95yhRHnktZlSqUCSalnqFwqoBA',
     sheetName: 'Sheet1',
   },
 };
 
-const AUTO_REFRESH_SEC = 120;
+const AUTO_REFRESH_SEC = 60;
 
 function buildUrls(sheetId, sheetName) {
   const base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}&cachebust=${Date.now()}`;
