@@ -433,7 +433,7 @@ const CLASS_CONFIG = {
     sheetId: '1tjT1ZTaGLBKoRnHa8bHmZkxQJAkWoCZRpkM0H62WE8c',
     sheetName: 'Sheet1',
   },
-  _I: {
+  MCA_I: {
     label: 'I MCA - A',
     name:  'Master of Computer Applications I (2024 – 2026)',
     sheetId: '13izNc-vSkWHyzJy8-tFcxrC82yxbt7crQdtDw1qAafI',
@@ -441,13 +441,13 @@ const CLASS_CONFIG = {
   },
   MCA_II: {
     label: 'I MCA - B',
-    name:  'Master of Computer Applications II (2023 – 2025)',
+    name:  'Master of Computer Applications II (2024 – 2026)',
     sheetId: '1GtalgSey_i23xStXt95yhRHnktZlSqUCSalnqFwqoBA',
     sheetName: 'Sheet1',
   },
 };
 
-const AUTO_REFRESH_SEC = 60;
+const AUTO_REFRESH_SEC = 120;
 
 function buildUrls(sheetId, sheetName) {
   const base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}&cachebust=${Date.now()}`;
