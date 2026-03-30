@@ -339,12 +339,7 @@
         </div>
         <div class="chart-container" style="height:300px"><canvas id="topStudentsChart"></canvas></div>
       </div>
-      <!-- Global Rank chart -->
-      <div class="chart-card chart-wide">
-        <div class="chart-title">Top 15 Students — Global Rank</div>
-        <div class="chart-sub">Lower rank number = better position on LeetCode</div>
-        <div class="chart-container" style="height:280px"><canvas id="globalRankChart"></canvas></div>
-      </div>
+
     </div>
 
     <div class="section-header no-print">
@@ -721,15 +716,13 @@ function renderMetrics() {
   const avgRank = ranked.length > 0 ? Math.round(ranked.reduce((a,b) => a+b.globalRank, 0) / ranked.length) : 0;
 
   document.getElementById('metricsRanking').innerHTML = [
-    {label:"Ranked Students", value: ranked.length, sub:`out of ${data.length} students`, cls:"rank"},
     {label:"Best Global Rank", value: bestRank > 0 ? '#'+bestRank.toLocaleString('en-IN') : '—', sub: bestStudent ? bestStudent.name.split(' ')[0] : 'N/A', cls:"rank"},
-    {label:"Avg Global Rank", value: avgRank > 0 ? '#'+avgRank.toLocaleString('en-IN') : '—', sub:"among ranked students", cls:"rank"}
   ].map(card).join('');
 }
 
 // ── CHARTS ────────────────────────────────────────────────────────────
 function destroyCharts() {
-  ['difficultyChart','engagementChart','topStudentsChart','globalRankChart'].forEach(id => {
+  ['difficultyChart','engagementChart','topStudentsChart'].forEach(id => {
     if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; }
   });
 }
@@ -828,74 +821,6 @@ function renderCharts() {
                  min:0, max:Math.max(5, ...top15.map(s=>s.total))+1}}}
   });
 
-  // ── GLOBAL RANK CHART ──
-  // Show top 15 by best (lowest) global rank; skip students without a rank
-  const ranked = [...data].filter(d => d.globalRank > 0).sort((a,b) => a.globalRank - b.globalRank).slice(0,15);
-
-  const grLabelPlugin = {id:'grLabelPlugin', afterDatasetDraw(chart) {
-    const {ctx} = chart;
-    chart.getDatasetMeta(0).data.forEach((bar, i) => {
-      const v = ranked[i]?.globalRank; if (!v) return;
-      const label = '#' + v.toLocaleString('en-IN');
-      ctx.save(); ctx.font = 'bold 10px DM Mono, monospace'; ctx.fillStyle = '#7b2d8b';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-      ctx.fillText(label, bar.x, bar.y - 4); ctx.restore();
-    });
-  }};
-
-  const emptyRankPlugin = {id:'emptyRankPlugin', afterDraw(c) {
-    if (ranked.length > 0) return;
-    const {ctx, width:w, height:h} = c; ctx.save();
-    ctx.font = '500 13px DM Mono, monospace'; ctx.fillStyle = '#b5afa6';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('No global rank data available yet', w/2, h/2); ctx.restore();
-  }};
-
-  chartInstances['globalRankChart'] = new Chart(document.getElementById('globalRankChart'), {
-    type: 'bar',
-    plugins: [grLabelPlugin, emptyRankPlugin],
-    data: {
-      labels: ranked.map(s => s.name.split(' ')[0]),
-      datasets: [{
-        label: 'Global Rank',
-        data: ranked.map(s => s.globalRank),
-        backgroundColor: ranked.map((_, i) => {
-          if (i === 0) return '#7b2d8b';
-          if (i === 1) return '#a052b8';
-          if (i === 2) return '#c47dd4';
-          return '#deb8ea';
-        }),
-        borderRadius: 6,
-        borderSkipped: false,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      layout: { padding: { top: 28 } },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            title: items => ranked[items[0].dataIndex]?.name || '',
-            label: c => ` Global Rank: #${c.raw.toLocaleString('en-IN')}`
-          }
-        }
-      },
-      scales: {
-        x: { grid: { display: false }, ticks: { font: { family: 'DM Mono', size: 10 }, color: '#7a7368' } },
-        y: {
-          grid: { color: '#eeeae0' },
-          ticks: {
-            font: { family: 'DM Mono', size: 10 }, color: '#7a7368',
-            callback: v => '#' + v.toLocaleString('en-IN')
-          },
-          // Lower rank = better, so we reverse the axis
-          reverse: false,
-          title: { display: true, text: 'Rank Number (lower = better)', font: { family: 'DM Mono', size: 10 }, color: '#7a7368' }
-        }
-      }
-    }
-  });
 }
 
 // ── TABLE ─────────────────────────────────────────────────────────────
