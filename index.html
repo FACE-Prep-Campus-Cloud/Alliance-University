@@ -342,7 +342,7 @@
           <span><span class="legend-dot" style="background:var(--medium)"></span>Medium</span>
           <span><span class="legend-dot" style="background:var(--hard)"></span>Hard</span>
         </div>
-        <div class="chart-container" style="height:300px"><canvas id="topStudentsChart"></canvas></div>
+        <div class="chart-container" style="height:320px"><canvas id="topStudentsChart"></canvas></div>
       </div>
 
     </div>
@@ -647,7 +647,6 @@ function parseCSV(text) {
   const medC    = col('medium', 'med', 'no of medium', 'medium solved', 'medium problems', 'no.of medium');
   const hardC   = col('hard', 'no of hard', 'hard solved', 'hard problems', 'no.of hard');
   const snoC    = col('s.no', 'sno', 's no', 'no', '#', 'serial', 'sl no', 'sl.no');
-  // Global rank — accepts multiple common header names
   const rankC   = col('global rank', 'globalrank', 'global_rank', 'leetcode rank', 'lc rank', 'rank', 'world rank', 'contest rank');
 
   if (nameC < 0 || easyC < 0 || medC < 0 || hardC < 0) {
@@ -665,7 +664,6 @@ function parseCSV(text) {
     const name = (r[nameC] || '').trim().replace(/^"|"$/g, '');
     if (!name || /^[-\s,]*$/.test(name)) continue;
 
-    // Global rank: 0 means not ranked / not available
     let gRankRaw = rankC >= 0 ? (r[rankC] || '').trim().replace(/,/g, '') : '';
     const globalRank = gRankRaw && !isNaN(parseInt(gRankRaw)) ? Math.max(0, parseInt(gRankRaw)) : 0;
 
@@ -714,11 +712,9 @@ function renderMetrics() {
     {label:"Hard",   value:H, sub:`${pct(H,T||1)}% of total`, cls:"hard"}
   ].map(card).join('');
 
-  // Global rank metrics
   const ranked = data.filter(d => d.globalRank > 0);
   const bestRank = ranked.length > 0 ? Math.min(...ranked.map(d => d.globalRank)) : 0;
   const bestStudent = ranked.length > 0 ? ranked.find(d => d.globalRank === bestRank) : null;
-  const avgRank = ranked.length > 0 ? Math.round(ranked.reduce((a,b) => a+b.globalRank, 0) / ranked.length) : 0;
 
   document.getElementById('metricsRanking').innerHTML = [
     {label:"Best Global Rank", value: bestRank > 0 ? '#'+bestRank.toLocaleString('en-IN') : '—', sub: bestStudent ? bestStudent.name : 'N/A', cls:"rank"},
@@ -812,20 +808,43 @@ function renderCharts() {
 
   chartInstances['topStudentsChart'] = new Chart(document.getElementById('topStudentsChart'), {
     type:'bar', plugins:[tlp, emptyPlugin('No submissions yet — check back soon')],
-    data:{labels:top15.map(s => s.name.split(' ')[0]), datasets:[
-      {label:'Easy',   data:top15.map(s=>s.easy),   backgroundColor:'#3d9970', borderRadius:0, stack:'s0'},
-      {label:'Medium', data:top15.map(s=>s.medium), backgroundColor:'#e67e22', borderRadius:0, stack:'s0'},
-      {label:'Hard',   data:top15.map(s=>s.hard),   backgroundColor:'#c0392b', borderRadius:4, stack:'s0'},
-      {label:'Total',  data:top15.map(s=>s.total),  type:'line', borderColor:'#2c5f8a', backgroundColor:'rgba(44,95,138,0.12)', borderWidth:2.5, pointBackgroundColor:'#2c5f8a', pointRadius:5, pointHoverRadius:7, fill:false, tension:.35, yAxisID:'y', stack:undefined, order:0}
-    ]},
-    options:{responsive:true, maintainAspectRatio:false, layout:{padding:{top:36}}, interaction:{mode:'index', intersect:false},
-      plugins:{legend:{display:true, labels:{font:{family:'DM Mono',size:10}, color:'#7a7368', boxWidth:12, padding:16}},
-        tooltip:{callbacks:{title:items=>top15[items[0].dataIndex]?.name||'', label:c=>` ${c.dataset.label}: ${c.raw}`}}},
-      scales:{x:{stacked:true, grid:{display:false}, ticks:{font:{family:'DM Mono',size:10}, color:'#7a7368'}},
-              y:{stacked:true, grid:{color:'#eeeae0'}, ticks:{font:{family:'DM Mono',size:10}, color:'#7a7368', stepSize:2},
-                 min:0, max:Math.max(5, ...top15.map(s=>s.total))+1}}}
+    data:{
+      // ── CHANGE: use full name instead of first name only ──
+      labels: top15.map(s => s.name),
+      datasets:[
+        {label:'Easy',   data:top15.map(s=>s.easy),   backgroundColor:'#3d9970', borderRadius:0, stack:'s0'},
+        {label:'Medium', data:top15.map(s=>s.medium), backgroundColor:'#e67e22', borderRadius:0, stack:'s0'},
+        {label:'Hard',   data:top15.map(s=>s.hard),   backgroundColor:'#c0392b', borderRadius:4, stack:'s0'},
+        {label:'Total',  data:top15.map(s=>s.total),  type:'line', borderColor:'#2c5f8a', backgroundColor:'rgba(44,95,138,0.12)', borderWidth:2.5, pointBackgroundColor:'#2c5f8a', pointRadius:5, pointHoverRadius:7, fill:false, tension:.35, yAxisID:'y', stack:undefined, order:0}
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, layout:{padding:{top:36}}, interaction:{mode:'index', intersect:false},
+      plugins:{
+        legend:{display:true, labels:{font:{family:'DM Mono',size:10}, color:'#7a7368', boxWidth:12, padding:16}},
+        tooltip:{callbacks:{title:items=>top15[items[0].dataIndex]?.name||'', label:c=>` ${c.dataset.label}: ${c.raw}`}}
+      },
+      scales:{
+        x:{
+          stacked:true,
+          grid:{display:false},
+          ticks:{
+            font:{family:'DM Mono', size:10},
+            color:'#7a7368',
+            maxRotation: 45,
+            minRotation: 30
+          }
+        },
+        y:{
+          stacked:true,
+          grid:{color:'#eeeae0'},
+          ticks:{font:{family:'DM Mono',size:10}, color:'#7a7368', stepSize:2},
+          min:0,
+          max:Math.max(5, ...top15.map(s=>s.total))+1
+        }
+      }
+    }
   });
-
 }
 
 // ── TABLE ─────────────────────────────────────────────────────────────
@@ -885,7 +904,6 @@ function renderTable() {
 
 function setSortCol(key, btn) {
   currentSort.key = key;
-  // For globalRank: ascending = best rank first (lowest number)
   currentSort.dir = key === 'globalRank' ? 'asc' : 'desc';
   document.querySelectorAll('.sort-col-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
