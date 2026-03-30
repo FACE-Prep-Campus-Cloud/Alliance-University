@@ -256,49 +256,21 @@
     text-overflow: ellipsis;
   }
 
-  /* ── Students group — 2 cards side by side ── */
-  .metrics-group.students .metric-value {
-    font-size: 2.2rem;
-  }
-  .metrics-group.students .metric-sub {
-    font-size: 0.66rem;
-  }
+  /* ── Students group — matched to ranking ── */
+  .metrics-group.students .metric-label { font-size: 0.61rem; margin-bottom: 8px; }
+  .metrics-group.students .metric-value { font-size: 2rem; }
+  .metrics-group.students .metric-sub   { font-size: 0.65rem; }
 
-  /* ── Questions group — 4 cards, more compact ── */
-  .metrics-group.questions .metric-value {
-    font-size: 2.3rem;
-  }
-  .metrics-group.questions .metric-sub {
-    font-size: 0.66rem;
-  }
+  /* ── Questions group — visibly larger ── */
+  .metrics-group.questions .metric-label { font-size: 0.61rem; margin-bottom: 8px; }
+  .metrics-group.questions .metric-value { font-size: 2.5rem; }
+  .metrics-group.questions .metric-sub   { font-size: 0.65rem; }
 
-  /* ── Ranking group — 1 card, rank can be long ── */
-  .metrics-group.ranking .metrics-group-cards .metric-card {
-    padding: 18px 18px 16px;
-  }
-  .metrics-group.ranking .metric-value {
-    font-size: 1.75rem;
-    word-break: break-word;
-    white-space: normal;
-    line-height: 1.15;
-  }
-  .metrics-group.ranking .metric-label {
-    font-size: 0.58rem;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-  }
-  .metrics-group.ranking .metric-sub {
-    font-size: 0.63rem;
-    white-space: normal;
-    overflow: visible;
-    text-overflow: unset;
-    line-height: 1.4;
-    margin-top: 4px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
+  /* ── Ranking group — matched to students ── */
+  .metrics-group.ranking .metrics-group-cards .metric-card { padding: 18px 16px 16px; }
+  .metrics-group.ranking .metric-label { font-size: 0.61rem; letter-spacing: 1px; margin-bottom: 8px; }
+  .metrics-group.ranking .metric-value { font-size: 2rem; word-break: break-word; white-space: normal; line-height: 1.1; }
+  .metrics-group.ranking .metric-sub   { font-size: 0.65rem; white-space: normal; line-height: 1.35; margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
   /* ── CHARTS ── */
   .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
@@ -517,11 +489,11 @@
             <tr>
               <th onclick="sortTable('sno')">S.No</th>
               <th onclick="sortTable('name')">Student Name</th>
+              <th onclick="sortTable('globalRank')" style="color:var(--rank)">Global Rank</th>
               <th onclick="sortTable('easy')">Easy</th>
               <th onclick="sortTable('medium')">Medium</th>
               <th onclick="sortTable('hard')">Hard</th>
               <th onclick="sortTable('total')">Total</th>
-              <th onclick="sortTable('globalRank')" style="color:var(--rank)">Global Rank</th>
               <th>Progress</th>
             </tr>
           </thead>
@@ -995,11 +967,11 @@ function renderTable() {
     return `<tr class="${s.total===0?'no-attempt':''}">
       <td class="td-sno">${start+i+1}</td>
       <td class="td-name">${s.name}${isTop?`<span class="topper-tag">#${s.rank}</span>`:''}</td>
+      <td>${rankDisplay}</td>
       <td><span class="badge ${s.easy>0?'badge-easy':'badge-zero'}">${s.easy}</span></td>
       <td><span class="badge ${s.medium>0?'badge-medium':'badge-zero'}">${s.medium}</span></td>
       <td><span class="badge ${s.hard>0?'badge-hard':'badge-zero'}">${s.hard}</span></td>
       <td><strong>${s.total}</strong></td>
-      <td>${rankDisplay}</td>
       <td><div class="total-bar-wrap"><div class="total-bar-fill" style="width:${pct}%"></div></div></td>
     </tr>`;
   }).join('');
@@ -1051,7 +1023,7 @@ function downloadPDF() {
     const rankDisplay = s.globalRank > 0
       ? `<span class="badge badge-rank">#${s.globalRank.toLocaleString('en-IN')}</span>`
       : `<span class="badge badge-zero">—</span>`;
-    return `<tr class="${s.total===0?'no-attempt':''}"><td class="td-sno">${i+1}</td><td class="td-name">${s.name}${isTop?`<span class="topper-tag">#${s.rank}</span>`:''}</td><td><span class="badge ${s.easy>0?'badge-easy':'badge-zero'}">${s.easy}</span></td><td><span class="badge ${s.medium>0?'badge-medium':'badge-zero'}">${s.medium}</span></td><td><span class="badge ${s.hard>0?'badge-hard':'badge-zero'}">${s.hard}</span></td><td><strong>${s.total}</strong></td><td>${rankDisplay}</td><td><div class="total-bar-wrap"><div class="total-bar-fill" style="width:${pct}%"></div></div></td></tr>`;
+    return `<tr class="${s.total===0?'no-attempt':''}"><td class="td-sno">${i+1}</td><td class="td-name">${s.name}${isTop?`<span class="topper-tag">#${s.rank}</span>`:''}</td><td>${rankDisplay}</td><td><span class="badge ${s.easy>0?'badge-easy':'badge-zero'}">${s.easy}</span></td><td><span class="badge ${s.medium>0?'badge-medium':'badge-zero'}">${s.medium}</span></td><td><span class="badge ${s.hard>0?'badge-hard':'badge-zero'}">${s.hard}</span></td><td><strong>${s.total}</strong></td><td><div class="total-bar-wrap"><div class="total-bar-fill" style="width:${pct}%"></div></div></td></tr>`;
   }).join('');
   window.print();
   setTimeout(() => { tbody.innerHTML = saved; }, 600);
