@@ -147,10 +147,10 @@
 
   /* ── METRICS ── */
   .metrics-wrapper { display: flex; gap: 10px; margin-bottom: 24px; align-items: stretch; }
-  .metrics-group { display: flex; flex-direction: column; border-radius: 10px; overflow: hidden; border: 1.5px solid var(--border); box-shadow: var(--shadow); flex: 1; animation: fadeUp 0.4s ease both; }
-  .metrics-group.students { animation-delay: 0.05s; border-color: #d4c8f0; }
-  .metrics-group.questions { animation-delay: 0.1s; border-color: #b8ddc8; }
-  .metrics-group.ranking { animation-delay: 0.15s; border-color: #e4c8f0; }
+  .metrics-group { display: flex; flex-direction: column; border-radius: 10px; overflow: hidden; border: 1.5px solid var(--border); box-shadow: var(--shadow); animation: fadeUp 0.4s ease both; }
+  .metrics-group.students { flex: 1.1; animation-delay: 0.05s; border-color: #d4c8f0; }
+  .metrics-group.questions { flex: 2.2; animation-delay: 0.1s; border-color: #b8ddc8; }
+  .metrics-group.ranking { flex: 0.75; animation-delay: 0.15s; border-color: #e4c8f0; }
   .metrics-group-label { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; padding: 6px 16px; font-family: var(--font-mono); font-weight: 600; display: flex; align-items: center; gap: 7px; white-space: nowrap; }
   .metrics-group.students .metrics-group-label { background: #ede8ff; color: #5a3fa0; border-bottom: 1px solid #d4c8f0; }
   .metrics-group.questions .metrics-group-label { background: #e4f7ed; color: #1e6e47; border-bottom: 1px solid #b8ddc8; }
@@ -158,14 +158,19 @@
   .metrics-group-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
   .students .metrics-group-dot { background: #7b5fe0; } .questions .metrics-group-dot { background: var(--easy); } .ranking .metrics-group-dot { background: var(--rank); }
   .metrics-group-cards { display: flex; flex: 1; background: var(--surface); }
-  .metrics-group-cards .metric-card { border: none; border-radius: 0; box-shadow: none; flex: 1; margin: 0; animation: none; padding: 14px 18px; }
+  .metrics-group-cards .metric-card { border: none; border-radius: 0; box-shadow: none; flex: 1; margin: 0; animation: none; padding: 14px 18px; overflow: hidden; min-width: 0; }
   .metrics-group-cards .metric-card + .metric-card { border-left: 1px solid var(--border); }
   .metric-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: 16px 20px; box-shadow: var(--shadow); animation: fadeUp 0.4s ease both; }
-  .metric-label { font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .metric-label { font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .metric-value { font-family: var(--font-head); font-size: 2.2rem; font-weight: 700; line-height: 1; color: var(--ink); }
   .metric-value.easy { color: var(--easy); } .metric-value.medium { color: var(--medium); }
   .metric-value.hard { color: var(--hard); } .metric-value.accent { color: var(--accent); } .metric-value.rank { color: var(--rank); }
-  .metric-sub { font-size: 0.7rem; color: var(--muted); margin-top: 6px; }
+  .metric-sub { font-size: 0.7rem; color: var(--muted); margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* per-group sizing */
+  .metrics-group.questions .metric-value { font-size: 2.5rem; }
+  .metrics-group.ranking .metric-value { font-size: 1.4rem; word-break: break-word; white-space: normal; line-height: 1.2; }
+  .metrics-group.ranking .metric-label { font-size: 0.58rem; letter-spacing: 1px; }
+  .metrics-group.ranking .metric-sub { font-size: 0.62rem; white-space: normal; overflow: visible; line-height: 1.4; }
 
   /* ── CHARTS ── */
   .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
@@ -716,7 +721,7 @@ function renderMetrics() {
   const avgRank = ranked.length > 0 ? Math.round(ranked.reduce((a,b) => a+b.globalRank, 0) / ranked.length) : 0;
 
   document.getElementById('metricsRanking').innerHTML = [
-    {label:"Best Global Rank", value: bestRank > 0 ? '#'+bestRank.toLocaleString('en-IN') : '—', sub: bestStudent ? bestStudent.name.split(' ')[0] : 'N/A', cls:"rank"},
+    {label:"Best Global Rank", value: bestRank > 0 ? '#'+bestRank.toLocaleString('en-IN') : '—', sub: bestStudent ? bestStudent.name : 'N/A', cls:"rank"},
   ].map(card).join('');
 }
 
