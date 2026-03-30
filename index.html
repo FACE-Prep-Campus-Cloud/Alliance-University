@@ -827,9 +827,17 @@ function renderMetrics() {
   const bestRank = ranked.length > 0 ? Math.min(...ranked.map(d => d.globalRank)) : 0;
   const bestStudent = ranked.length > 0 ? ranked.find(d => d.globalRank === bestRank) : null;
 
-  document.getElementById('metricsRanking').innerHTML = [
-    {label:"Best Global Rank", value: bestRank > 0 ? '#'+bestRank.toLocaleString('en-IN') : '—', sub: bestStudent ? bestStudent.name : 'N/A', cls:"rank"},
-  ].map(card).join('');
+  const rankVal = bestRank > 0 ? '#'+bestRank.toLocaleString('en-IN') : '—';
+  const rankLen = rankVal.replace(/[^0-9]/g, '').length;
+  // Scale font down as digit count grows: ≤4 digits→2rem, 5→1.8, 6→1.55, 7+→1.3
+  const rankFontSize = rankLen <= 4 ? '2rem' : rankLen === 5 ? '1.8rem' : rankLen === 6 ? '1.55rem' : '1.3rem';
+
+  document.getElementById('metricsRanking').innerHTML =
+    `<div class="metric-card" style="padding:14px 14px 12px">
+      <div class="metric-label" style="font-size:0.61rem;letter-spacing:1px;margin-bottom:6px">Best Global Rank</div>
+      <div class="metric-value rank" style="font-size:${rankFontSize};word-break:break-word;white-space:normal;line-height:1.15;margin-bottom:4px">${rankVal}</div>
+      <div class="metric-sub" style="font-size:0.65rem;white-space:normal;line-height:1.35;margin-top:2px">${bestStudent ? bestStudent.name : 'N/A'}</div>
+    </div>`;
 }
 
 // ── CHARTS ────────────────────────────────────────────────────────────
